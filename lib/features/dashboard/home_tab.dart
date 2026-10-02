@@ -605,17 +605,10 @@ class _HomeTabState extends State<HomeTab> {
                           if (isChoice) {
                             return SizedBox(
                               height: 120, // fixed height for PageView
-                              child: PageView.builder(
-                                controller: PageController(viewportFraction: 0.93),
-                                padEnds: false,
-                                itemCount: options.length,
-                                itemBuilder: (context, optIndex) {
-                                  final opt = options[optIndex];
-                                  return Padding(
-                                    padding: EdgeInsets.only(right: optIndex == options.length - 1 ? 0 : 10),
-                                    child: _buildClassCard(opt, isCancelled: c['isCancelled'] == true, optionIndex: optIndex, totalOptions: options.length),
-                                  );
-                                },
+                              child: _ChoiceCarousel(
+                                options: options,
+                                isCancelled: c['isCancelled'] == true,
+                                buildCard: _buildClassCard,
                               ),
                             );
                           } else {
@@ -815,4 +808,57 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 }
+
+class _ChoiceCarousel extends StatefulWidget {
+  final List<dynamic> options;
+  final bool isCancelled;
+  final Widget Function(Map<String, dynamic>, {required bool isCancelled, int? optionIndex, int? totalOptions}) buildCard;
+
+  const _ChoiceCarousel({
+    super.key,
+    required this.options,
+    required this.isCancelled,
+    required this.buildCard,
+  });
+
+  @override
+  State<_ChoiceCarousel> createState() => _ChoiceCarouselState();
+}
+
+class _ChoiceCarouselState extends State<_ChoiceCarousel> {
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.93);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      controller: _pageController,
+      padEnds: false,
+      itemCount: widget.options.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.only(right: index == widget.options.length - 1 ? 0 : 10),
+          child: widget.buildCard(
+            widget.options[index] as Map<String, dynamic>,
+            isCancelled: widget.isCancelled,
+            optionIndex: index,
+            totalOptions: widget.options.length,
+          ),
+        );
+      },
+    );
+  }
+}
+
 

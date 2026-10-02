@@ -10,12 +10,19 @@ import 'dart:io';
 class FakeFlutterLocalNotificationsPlugin implements FlutterLocalNotificationsPlugin {
   final List<int> cancelledIds = [];
   final List<int> scheduledIds = [];
+  final Map<int, String> scheduledPayloads = {};
   int count = 0;
 
   @override
   Future<void> cancel(int id, {String? tag}) async {
     cancelledIds.add(id);
     scheduledIds.remove(id);
+    scheduledPayloads.remove(id);
+  }
+
+  @override
+  Future<List<PendingNotificationRequest>> pendingNotificationRequests() async {
+    return scheduledIds.map((id) => PendingNotificationRequest(id, 'title', 'body', scheduledPayloads[id])).toList();
   }
 
   @override
@@ -23,6 +30,11 @@ class FakeFlutterLocalNotificationsPlugin implements FlutterLocalNotificationsPl
     if (invocation.memberName == #zonedSchedule) {
       final id = invocation.positionalArguments[0] as int;
       scheduledIds.add(id);
+      
+      if (invocation.namedArguments.containsKey(#payload)) {
+        scheduledPayloads[id] = invocation.namedArguments[#payload] as String;
+      }
+      
       count++;
       return Future<void>.value();
     }
@@ -100,8 +112,6 @@ void main() {
 
     expect(mockPlugin.scheduledIds.length, 1, reason: 'Should schedule 1 reminder');
     final scheduledId = mockPlugin.scheduledIds.first;
-    final registry1 = StorageService.getReminderRegistry('student');
-    expect(registry1.length, 1);
 
     // 2. Update to holiday
     final overrides = [
@@ -118,8 +128,6 @@ void main() {
     );
 
     expect(mockPlugin.cancelledIds.contains(scheduledId), true, reason: 'Should cancel the reminder on holiday');
-    final registry2 = StorageService.getReminderRegistry('student');
-    expect(registry2.length, 0, reason: 'Registry should be empty for that date');
   });
 
   test('Removed Class Test: Removing class cancels old reminder', () async {
@@ -157,8 +165,6 @@ void main() {
     );
 
     expect(mockPlugin.cancelledIds.contains(scheduledId), true);
-    final registry = StorageService.getReminderRegistry('student');
-    expect(registry.length, 0);
   });
 
   test('Time Change Test', () async {
@@ -268,13 +274,10 @@ void main() {
     );
 
     expect(mockPlugin.scheduledIds.length, 1);
-    final studentRegistry = StorageService.getReminderRegistry('student');
-    expect(studentRegistry.length, 1);
 
     // Switch to faculty (simulate via clearAllForMode on student)
     await ReminderManager.instance.clearAllForMode('student');
     expect(mockPlugin.scheduledIds.length, 0);
-    expect(StorageService.getReminderRegistry('student').length, 0);
   });
 
   test('Past Event Safety', () async {

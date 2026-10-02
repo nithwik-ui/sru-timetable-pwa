@@ -29,8 +29,8 @@ class ReminderManager {
     final dateString = _formatDate(targetDate);
     
     try {
-      final dayOverride = overrides.firstWhere((ov) => ov['override_date'] == dateString, orElse: () => null);
-      if (dayOverride != null) return false;
+      final matchingOverrides = overrides.where((ov) => ov['override_date'] == dateString);
+      if (matchingOverrides.isNotEmpty) return false;
     } catch (_) {}
 
     final startTimeStr = event['start_time']?.toString();

@@ -373,23 +373,17 @@ class _WeekTabState extends State<WeekTab> {
                         final options = c['options'] as List<dynamic>?;
                         final isChoice = options != null && options.isNotEmpty;
                         
-                        if (isChoice) {
-                          return SizedBox(
-                            height: 120, // fixed height for PageView
-                            child: PageView.builder(
-                              controller: PageController(viewportFraction: 0.93),
-                              padEnds: false,
-                              itemCount: options.length,
-                              itemBuilder: (context, optIndex) {
-                                final opt = options[optIndex];
-                                return Padding(
-                                  padding: EdgeInsets.only(bottom: 12, right: optIndex == options.length - 1 ? 0 : 10),
-                                  child: _buildClassCard(opt, isCancelled: isCancelled, isNext: isNext, optionIndex: optIndex, totalOptions: options.length),
-                                );
-                              },
-                            ),
-                          );
-                        } else {
+                          if (isChoice) {
+                            return SizedBox(
+                              height: 120, // fixed height for PageView
+                              child: _ChoiceCarousel(
+                                options: options,
+                                isCancelled: isCancelled,
+                                isNext: isNext,
+                                buildCard: _buildClassCard,
+                              ),
+                            );
+                          } else {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _buildClassCard(c, isCancelled: isCancelled, isNext: isNext),
@@ -605,6 +599,61 @@ class _WeekTabState extends State<WeekTab> {
         ],
       ),
     ),
+    );
+  }
+}
+
+class _ChoiceCarousel extends StatefulWidget {
+  final List<dynamic> options;
+  final bool isCancelled;
+  final bool isNext;
+  final Widget Function(Map<String, dynamic>, {required bool isCancelled, required bool isNext, int? optionIndex, int? totalOptions}) buildCard;
+
+  const _ChoiceCarousel({
+    super.key,
+    required this.options,
+    required this.isCancelled,
+    required this.isNext,
+    required this.buildCard,
+  });
+
+  @override
+  State<_ChoiceCarousel> createState() => _ChoiceCarouselState();
+}
+
+class _ChoiceCarouselState extends State<_ChoiceCarousel> {
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.93);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      controller: _pageController,
+      padEnds: false,
+      itemCount: widget.options.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: 12, right: index == widget.options.length - 1 ? 0 : 10),
+          child: widget.buildCard(
+            widget.options[index] as Map<String, dynamic>,
+            isCancelled: widget.isCancelled,
+            isNext: widget.isNext,
+            optionIndex: index,
+            totalOptions: widget.options.length,
+          ),
+        );
+      },
     );
   }
 }

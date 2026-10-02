@@ -33,6 +33,14 @@ class _SraapTestScreenState extends State<SraapTestScreen> {
     _fetchCaptcha();
   }
 
+  @override
+  void dispose() {
+    _enrollmentCtrl.dispose();
+    _passwordCtrl.dispose();
+    _captchaCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchCaptcha() async {
     setState(() => _isLoading = true);
     try {
