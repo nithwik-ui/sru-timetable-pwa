@@ -4,6 +4,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'storage.dart';
 import 'dart:math';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../features/dashboard/dashboard_screen.dart';
@@ -17,6 +18,11 @@ class NotificationService {
   static Future<void> init() async {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+
+    if (kIsWeb) {
+      ReminderManager.instance.init(_notificationsPlugin);
+      return;
+    }
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@drawable/ic_notification');
@@ -75,6 +81,7 @@ class NotificationService {
   }
 
   static Future<void> showForegroundNotification(String? title, String? body, Map<String, dynamic> data) async {
+    if (kIsWeb) return;
     if (!StorageService.isNotificationsEnabled()) return;
 
     final type = data['type']?.toString();

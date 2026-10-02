@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../core/ad_service.dart';
@@ -51,6 +52,7 @@ class _AdBannerState extends State<AdBanner> with WidgetsBindingObserver {
   }
 
   Future<void> _loadAd() async {
+    if (kIsWeb) return;
     if (_isLoading || _isLoaded || _isDisposed) return;
     _isLoading = true;
 

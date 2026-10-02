@@ -14,6 +14,8 @@ import 'features/onboarding/mode_selection_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'core/sraap/sraap_session_manager.dart';
 import 'core/widget_updater.dart';
+import 'core/android_gatekeeper.dart';
+import 'core/ios_install_gatekeeper.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -235,7 +237,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         ),
       ),
       navigatorKey: navigatorKey,
-      home: const SplashController(),
+      home: const AndroidGatekeeper(
+        child: IosInstallGatekeeper(
+          child: SplashController(),
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
 import 'storage.dart';
 
@@ -7,6 +8,8 @@ class WidgetUpdater {
   static const String androidWidgetName = 'TimetableWidgetProvider';
 
   static Future<void> updateWidgetInfo() async {
+    if (kIsWeb) return;
+    
     final mode = StorageService.getUserMode();
     if (mode == null) {
       await HomeWidget.saveWidgetData<String>('timetable_data', '[]');

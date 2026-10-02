@@ -58,6 +58,7 @@ class ReminderManager {
     required List<dynamic> overrides,
     required String mode,
   }) async {
+    if (kIsWeb) return;
     if (!_initialized) return;
     debugPrint('[ReminderManager] reconcile started for mode: $mode');
 

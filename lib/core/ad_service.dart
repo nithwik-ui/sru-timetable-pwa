@@ -23,6 +23,7 @@ class AdService {
 
   /// Returns the appropriate Banner Ad Unit ID based on platform and build mode.
   String get bannerAdUnitId {
+    if (kIsWeb) return testBannerIdAndroid; // AdMob is skipped on Web, just return a dummy
     if (kReleaseMode) {
       return Platform.isAndroid ? prodBannerIdAndroid : prodBannerIdIos;
     }
@@ -30,7 +31,8 @@ class AdService {
   }
 
   /// Initializes MobileAds SDK exactly once and returns the initialization future.
-  Future<InitializationStatus> init() {
+  Future<void> init() async {
+    if (kIsWeb) return;
     if (_isInitialized && _initFuture != null) {
       return _initFuture!;
     }

@@ -1,11 +1,18 @@
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'api.dart';
 import 'constants.dart';
+import 'web_reload.dart';
 
 class UpdateService {
   /// Checks for updates. Returns a Map with 'status' and optionally 'latestTag', 'downloadUrl'.
   /// 'status' can be: 'error', 'timeout', 'no_internet', 'up_to_date', 'update_available'
   static Future<Map<String, dynamic>> checkForUpdates() async {
+    if (kIsWeb) {
+      reloadWebPage();
+      return {'status': 'up_to_date', 'installedVersion': 'Web', 'latestTag': 'Web'};
+    }
+    
     try {
       final release = await ApiService.fetchLatestGithubRelease();
       
