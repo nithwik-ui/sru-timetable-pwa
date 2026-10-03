@@ -206,6 +206,7 @@ class ReminderManager {
   }
 
   Future<void> clearAllForMode(String mode) async {
+    if (kIsWeb) return;
     if (!_initialized) return;
     final pendingRequests = await _notificationsPlugin.pendingNotificationRequests();
     for (var pending in pendingRequests) {

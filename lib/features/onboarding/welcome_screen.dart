@@ -100,6 +100,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                       textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _onContinue(),
                     ),
                     const SizedBox(height: 24),
                     // Continue button (no arrow as per spec visual distinction)

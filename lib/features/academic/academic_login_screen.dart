@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants.dart';
 import '../../core/storage.dart';
 import '../../core/sraap/sraap_session_manager.dart';
+import '../../core/sraap/sraap_auth_manager.dart';
 
 class AcademicLoginScreen extends StatefulWidget {
   const AcademicLoginScreen({super.key});
@@ -69,6 +70,7 @@ class _AcademicLoginScreenState extends State<AcademicLoginScreen> {
 
       if (res.statusCode == 302 || res.statusCode == 301 || res.body.toLowerCase().contains('logout') || res.bodyBytes.length > 10000) {
         // Success
+        await SraapAuthManager.instance.onLoginSuccess();
         await StorageService.setSraapConnected(true);
         if (mounted) {
           Navigator.of(context).pop(true);

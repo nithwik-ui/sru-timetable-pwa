@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'constants.dart';
@@ -219,11 +218,14 @@ class ApiService {
         '${AppConstants.apiBaseUrl}/api/rooms/free?day=${Uri.encodeComponent(day)}&time=${Uri.encodeComponent(time)}',
       );
       response = await http.get(uri).timeout(timeoutDuration);
-    } on SocketException catch (_) {
-      throw const FreeRoomsNetworkException();
-    } on TimeoutException catch (_) {
-      throw const FreeRoomsNetworkException();
     } catch (e) {
+      if (e is TimeoutException) {
+        throw const FreeRoomsNetworkException();
+      }
+      final eStr = e.toString().toLowerCase();
+      if (eStr.contains('socketexception') || eStr.contains('clientexception') || eStr.contains('xmlhttprequest')) {
+        throw const FreeRoomsNetworkException();
+      }
       if (e is FreeRoomsException) rethrow;
       throw const FreeRoomsNetworkException();
     }

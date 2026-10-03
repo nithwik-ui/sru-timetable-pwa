@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'sraap_session_state.dart';
 import 'sraap_storage.dart';
@@ -134,11 +133,14 @@ class SraapAuthManager extends ChangeNotifier {
         return SraapLoginResult(success: false, error: SraapLoginError.invalidCredentials);
       }
       return SraapLoginResult(success: false, error: SraapLoginError.unknown);
-    } on SocketException {
-      return SraapLoginResult(success: false, error: SraapLoginError.networkUnavailable);
-    } on TimeoutException {
-      return SraapLoginResult(success: false, error: SraapLoginError.timeout);
-    } catch (_) {
+    } catch (e) {
+      if (e is TimeoutException) {
+        return SraapLoginResult(success: false, error: SraapLoginError.timeout);
+      }
+      final eStr = e.toString().toLowerCase();
+      if (eStr.contains('socketexception') || eStr.contains('clientexception') || eStr.contains('xmlhttprequest')) {
+        return SraapLoginResult(success: false, error: SraapLoginError.networkUnavailable);
+      }
       return SraapLoginResult(success: false, error: SraapLoginError.portalUnavailable);
     }
   }

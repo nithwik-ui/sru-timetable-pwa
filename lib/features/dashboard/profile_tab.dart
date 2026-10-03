@@ -341,28 +341,6 @@ class _ProfileTabState extends State<ProfileTab> {
                           ),
                         ],
                         
-                        // --- PWA TESTING BUTTON ---
-                        const SizedBox(height: 16),
-                        if (kIsWeb)
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              NotificationService.showForegroundNotification(
-                                'PWA Push Test',
-                                'This is a local test notification to verify iOS Safari Web Push capabilities!',
-                                {'action': 'test'},
-                              );
-                            },
-                            icon: const Icon(Icons.notifications_active),
-                            label: const Text('Test PWA Notification'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppConstants.warning,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                            ),
-                          ),
-                        // -------------------------
-
-                        const SizedBox(height: 16),
                         // Ghost Link: Change Timetable
                         TextButton(
                           onPressed: _onChangeTimetable,

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'storage.dart';
 import 'api.dart';
@@ -106,7 +105,8 @@ class SyncService extends ChangeNotifier {
       );
       
       _lastCheckedAt = DateTime.now();
-      if (e is SocketException) {
+      final eStr = e.toString().toLowerCase();
+      if (eStr.contains('socketexception') || eStr.contains('clientexception') || eStr.contains('xmlhttprequest')) {
         _syncState = SyncState.offline;
       } else if (e is TimeoutException) {
         _syncState = SyncState.syncTimeout;

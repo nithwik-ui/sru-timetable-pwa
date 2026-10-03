@@ -86,7 +86,8 @@ class _ChangesTabState extends State<ChangesTab> {
         setState(() {
           _isLoading = false;
           // Only show offline banner if it's a network issue
-          if (e.toString().contains('SocketException') || e.toString().contains('TimeoutException')) {
+          final eStr = e.toString().toLowerCase();
+          if (eStr.contains('socketexception') || eStr.contains('clientexception') || eStr.contains('xmlhttprequest') || eStr.contains('timeoutexception')) {
             _isOffline = true;
           }
         });

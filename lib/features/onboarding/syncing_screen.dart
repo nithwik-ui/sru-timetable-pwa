@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:async';
-import 'dart:io';
 import '../../core/constants.dart';
 import '../../core/api.dart';
 import '../../core/storage.dart';
@@ -101,7 +100,8 @@ class _SyncingScreenState extends State<SyncingScreen> {
       debugPrint('[SYNC] StackTrace: $stackTrace');
       
       String displayError = 'Unknown error occurred.';
-      if (e is SocketException || e is TimeoutException) {
+      final eStr = e.toString().toLowerCase();
+      if (eStr.contains('socketexception') || eStr.contains('clientexception') || eStr.contains('xmlhttprequest') || eStr.contains('timeoutexception')) {
         displayError = 'Network failure. Please check your internet connection.';
       } else {
         displayError = e.toString().replaceFirst('Exception: ', '');

@@ -52,9 +52,7 @@ class _DegreeScreenState extends State<DegreeScreen> {
           _filteredDegrees = list;
           _isLoading = false;
         });
-        // Background refresh
-        _refreshDegrees();
-        return;
+        return; // Skip background refresh to avoid UI jumping and lag
       }
     } catch (e) {
       debugPrint('Cache read error: $e');
@@ -65,7 +63,8 @@ class _DegreeScreenState extends State<DegreeScreen> {
   Future<void> _refreshDegrees() async {
     try {
       final list = await ApiService.fetchDegrees();
-      final codes = list.map((item) => (item['source_value'] as String)).toList();
+      final codes = list.map((item) => (item['source_value'] as String).trim()).toSet().toList();
+      codes.sort();
       
       await StorageService.saveDegreesCache(codes);
       

@@ -111,6 +111,7 @@ class NotificationService {
   }
 
   static Future<int> getPendingCount() async {
+    if (kIsWeb) return 0;
     final pending = await _notificationsPlugin.pendingNotificationRequests();
     return pending.length;
   }
