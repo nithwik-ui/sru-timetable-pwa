@@ -18,6 +18,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="SRU Timetable Official Application">
 
   <!-- iOS meta tags & icons -->
@@ -32,8 +33,40 @@
 
   <title>SRU Timetable</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      overscroll-behavior-x: none;
+      overscroll-behavior-y: none;
+      overscroll-behavior: none;
+      background-color: #F7F9FC; /* Prevent white flash */
+    }
+  </style>
 </head>
-<body>
+<body style="overscroll-behavior: none;">
+  <script>
+    (function() {
+      var ua = navigator.userAgent || navigator.vendor || window.opera;
+      var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+      var isMacTouch = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+      var isTest = window.location.search.indexOf('test=true') > -1;
+      
+      if (!isIOS && !isMacTouch && !isTest) {
+        window.location.replace('https://play.google.com/store/apps/details?id=com.srutimetable.mobile');
+      }
+    })();
+    window.addEventListener('error', function(e) {
+      var d = document.createElement('div');
+      d.style.cssText = 'color:red;font-size:16px;padding:20px;background:white;position:absolute;z-index:9999;top:0;left:0;width:100%;word-wrap:break-word;';
+      d.innerHTML = '<b>JS Error:</b> ' + e.message + '<br><small>' + e.filename + ':' + e.lineno + '</small>';
+      document.body.appendChild(d);
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      var d = document.createElement('div');
+      d.style.cssText = 'color:red;font-size:16px;padding:20px;background:white;position:absolute;z-index:9999;top:0;left:0;width:100%;word-wrap:break-word;';
+      d.innerHTML = '<b>Promise Error:</b> ' + (e.reason && e.reason.message ? e.reason.message : e.reason);
+      document.body.appendChild(d);
+    });
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

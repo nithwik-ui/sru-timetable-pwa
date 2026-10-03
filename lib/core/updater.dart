@@ -9,7 +9,6 @@ class UpdateService {
   /// 'status' can be: 'error', 'timeout', 'no_internet', 'up_to_date', 'update_available'
   static Future<Map<String, dynamic>> checkForUpdates() async {
     if (kIsWeb) {
-      reloadWebPage();
       return {'status': 'up_to_date', 'installedVersion': 'Web', 'latestTag': 'Web'};
     }
     

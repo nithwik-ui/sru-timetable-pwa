@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -339,6 +340,28 @@ class _ProfileTabState extends State<ProfileTab> {
                             style: AppConstants.getMonoLabel(color: AppConstants.primary),
                           ),
                         ],
+                        
+                        // --- PWA TESTING BUTTON ---
+                        const SizedBox(height: 16),
+                        if (kIsWeb)
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              NotificationService.showForegroundNotification(
+                                'PWA Push Test',
+                                'This is a local test notification to verify iOS Safari Web Push capabilities!',
+                                {'action': 'test'},
+                              );
+                            },
+                            icon: const Icon(Icons.notifications_active),
+                            label: const Text('Test PWA Notification'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppConstants.warning,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                            ),
+                          ),
+                        // -------------------------
+
                         const SizedBox(height: 16),
                         // Ghost Link: Change Timetable
                         TextButton(

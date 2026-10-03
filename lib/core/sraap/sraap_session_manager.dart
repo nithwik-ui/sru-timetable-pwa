@@ -16,6 +16,18 @@ class SraapSessionManager {
   /// Contains diagnostic info for the developer prototype UI.
   String lastDebugLog = '';
 
+  Uri _buildUri(String path) {
+    if (kIsWeb) {
+      if (Uri.base.host == 'localhost' || Uri.base.host == '127.0.0.1') {
+        // Use a public CORS proxy for local testing only
+        return Uri.parse('https://corsproxy.io/?https://sraap.in$path');
+      }
+      // Use the secure Netlify/Vercel server-side proxy in production
+      return Uri.parse('${Uri.base.origin}/sraap-proxy$path');
+    }
+    return Uri.parse('https://sraap.in$path');
+  }
+
   /// Gets the current session cookies.
   String get cookieHeader => _cookieHeader;
 
@@ -38,7 +50,7 @@ class SraapSessionManager {
   Future<bool> fetchLoginPage() async {
     try {
       final res = await _client.get(
-        Uri.parse('https://sraap.in/student_login.php'),
+        _buildUri('/student_login.php'),
         headers: _headers(),
       );
       _updateCookies(res.headers);
@@ -55,7 +67,7 @@ class SraapSessionManager {
       if (_cookieHeader.isEmpty) {
         lastDebugLog += '1. No session cookie. Initializing via /student_login.php\n';
         final initRes = await _client.get(
-          Uri.parse('https://sraap.in/student_login.php'),
+          _buildUri('/student_login.php'),
           headers: _headers(),
         ).timeout(const Duration(seconds: 15));
         lastDebugLog += '   -> Status: ${initRes.statusCode}\n';
@@ -65,7 +77,7 @@ class SraapSessionManager {
 
       lastDebugLog += '2. Requesting /captcha/image.php\n';
       final res = await _client.get(
-        Uri.parse('https://sraap.in/captcha/image.php?${DateTime.now().millisecondsSinceEpoch}'),
+        _buildUri('/captcha/image.php?${DateTime.now().millisecondsSinceEpoch}'),
         headers: _headers(),
       ).timeout(const Duration(seconds: 15));
       
@@ -97,7 +109,7 @@ class SraapSessionManager {
     required String password,
     required String captcha,
   }) async {
-    final req = http.Request('POST', Uri.parse('https://sraap.in/student_login.php'));
+    final req = http.Request('POST', _buildUri('/student_login.php'));
     req.headers.addAll(_headers(isForm: true));
     req.followRedirects = false; // CRITICAL: Stop auto-redirect to capture cookies correctly
     req.bodyFields = {
@@ -119,7 +131,7 @@ class SraapSessionManager {
     if (_cookieHeader.isEmpty) return false;
     try {
       final res = await _client.get(
-        Uri.parse('https://sraap.in/student_login.php'),
+        _buildUri('/student_login.php'),
         headers: _headers(),
       );
       _updateCookies(res.headers);
@@ -142,7 +154,7 @@ class SraapSessionManager {
   /// General authenticated GET request (for fetching academic data later).
   Future<http.Response> get(String path) async {
     final res = await _client.get(
-      Uri.parse('https://sraap.in$path'),
+      _buildUri(path),
       headers: _headers(),
     );
     _updateCookies(res.headers);

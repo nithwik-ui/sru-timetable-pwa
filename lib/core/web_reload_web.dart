@@ -1,5 +1,8 @@
-import 'dart:html' as html;
+import 'dart:js_interop';
+
+@JS('window.location.reload')
+external void _reload();
 
 void reloadWebPage() {
-  html.window.location.reload();
+  _reload();
 }

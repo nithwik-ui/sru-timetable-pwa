@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,7 +16,6 @@ import 'features/dashboard/dashboard_screen.dart';
 import 'core/sraap/sraap_session_manager.dart';
 import 'core/widget_updater.dart';
 import 'core/android_gatekeeper.dart';
-import 'core/ios_install_gatekeeper.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -81,14 +81,40 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> _initFirebaseSafely() async {
   try {
-    await Firebase.initializeApp();
+    if (kIsWeb) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: "AIzaSyD9_WzJsEJSi-0ke0rdZVdA6ohgX_yib-Q",
+          appId: "1:712842876134:web:6a81c13779ec2828949727",
+          messagingSenderId: "712842876134",
+          projectId: "timetable-77a7d",
+          authDomain: "timetable-77a7d.firebaseapp.com",
+          storageBucket: "timetable-77a7d.firebasestorage.app",
+          measurementId: "G-WRP2DM4ZRL",
+        ),
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+    
     await AnalyticsService.instance.init();
     await AnalyticsService.instance.logAppOpen();
     
     final messaging = FirebaseMessaging.instance;
     
+    if (kIsWeb) {
+      // Request permission on web
+      await messaging.requestPermission();
+      // Required for Web Push
+      final vapidKey = "BLfXNackp6Rs_phEfbaIPWdKm7HADbl3RYGEhjU2qocshKk7CbeIX0Gb5zLQ9EH84nkSaZSiJCcENw4wWf7e12M";
+      await messaging.getToken(vapidKey: vapidKey);
+    }
+    
     // Subscribe to global topic for broadcasts in background
-    messaging.subscribeToTopic('sru_all_users').catchError((_) {});
+    if (!kIsWeb) {
+      // Topics are not fully supported on Web Push out of the box without Cloud Functions
+      messaging.subscribeToTopic('sru_all_users').catchError((_) {});
+    }
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -238,9 +264,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
       navigatorKey: navigatorKey,
       home: const AndroidGatekeeper(
-        child: IosInstallGatekeeper(
-          child: SplashController(),
-        ),
+        child: SplashController(),
       ),
     );
   }

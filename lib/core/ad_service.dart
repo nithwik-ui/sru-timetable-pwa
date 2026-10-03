@@ -34,7 +34,8 @@ class AdService {
   Future<void> init() async {
     if (kIsWeb) return;
     if (_isInitialized && _initFuture != null) {
-      return _initFuture!;
+      await _initFuture;
+      return;
     }
     _initFuture = MobileAds.instance.initialize().then((status) {
       _isInitialized = true;
@@ -46,7 +47,7 @@ class AdService {
       debugPrint('[ADMOB] SDK Initialization failed: $e');
       throw e;
     });
-    return _initFuture!;
+    await _initFuture;
   }
 
   /// Generates a human-readable instance ID for diagnostic logging.
