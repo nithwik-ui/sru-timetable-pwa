@@ -46,11 +46,12 @@
   <script>
     (function() {
       var ua = navigator.userAgent || navigator.vendor || window.opera;
-      var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-      var isMacTouch = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+      var isAndroid = /Android/.test(ua);
       var isTest = window.location.search.indexOf('test=true') > -1;
       
-      if (!isIOS && !isMacTouch && !isTest) {
+      // Only redirect Android users to Play Store directly from HTML.
+      // iOS and Desktop will be handled by the Flutter app (PwaPlatformGate).
+      if (isAndroid && !isTest) {
         window.location.replace('https://play.google.com/store/apps/details?id=com.srutimetable.mobile');
       }
     })();

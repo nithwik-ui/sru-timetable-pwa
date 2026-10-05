@@ -16,6 +16,7 @@ import 'features/dashboard/dashboard_screen.dart';
 import 'core/sraap/sraap_session_manager.dart';
 import 'core/widget_updater.dart';
 import 'core/android_gatekeeper.dart';
+import 'core/pwa_platform_gate.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -242,6 +243,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return MaterialApp(
       title: 'SRU Timetable',
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          behavior: HitTestBehavior.translucent,
+          child: child!,
+        );
+      },
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: AppConstants.background,
@@ -264,7 +274,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
       navigatorKey: navigatorKey,
       home: const AndroidGatekeeper(
-        child: SplashController(),
+        child: PwaPlatformGate(
+          child: SplashController(),
+        ),
       ),
     );
   }

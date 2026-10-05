@@ -46,8 +46,6 @@ class _YearScreenState extends State<YearScreen> {
         if (list.isNotEmpty) {
           _setSortedYears(list);
           _isLoading = false;
-          // Background refresh
-          _refreshYears();
           return;
         }
       }

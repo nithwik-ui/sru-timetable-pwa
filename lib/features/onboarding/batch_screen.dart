@@ -53,8 +53,6 @@ class _BatchScreenState extends State<BatchScreen> {
           _filteredBatches = list;
           _isLoading = false;
         });
-        // Background refresh
-        _refreshBatches();
         return;
       }
     } catch (e) {
