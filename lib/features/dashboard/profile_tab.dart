@@ -346,7 +346,6 @@ class _ProfileTabState extends State<ProfileTab> {
                           onPressed: _onChangeTimetable,
                           style: TextButton.styleFrom(
                             foregroundColor: AppConstants.primary,
-                            visualDensity: VisualDensity.compact,
                           ),
                           child: Text(
                             'Change timetable',

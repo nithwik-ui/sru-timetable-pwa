@@ -71,9 +71,6 @@ class _SyncingScreenState extends State<SyncingScreen> {
       } catch (_) {}
       await ApiService.registerDevice(fcmToken, widget.batchId);
       
-      // Delay briefly for animation effect
-      await Future.delayed(const Duration(seconds: 2));
-
       // 4. Save batch variables to local storage (marks onboarding as complete)
       await StorageService.saveSelection(
         degree: widget.degree,

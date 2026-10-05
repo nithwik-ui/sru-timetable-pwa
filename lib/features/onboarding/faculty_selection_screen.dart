@@ -120,7 +120,6 @@ class _FacultySelectionScreenState extends State<FacultySelectionScreen> {
       await NotificationService.reconcileReminders();
       SyncService.instance.syncTimetable();
 
-      await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return;
       
       Navigator.of(context).pushAndRemoveUntil(

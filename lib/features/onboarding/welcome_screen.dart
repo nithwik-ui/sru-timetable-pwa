@@ -13,18 +13,18 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _nameController = TextEditingController();
 
-  void _onContinue() async {
+  void _onContinue() {
     final name = _nameController.text.trim();
     if (name.isNotEmpty) {
-      await StorageService.saveUserName(name);
+      StorageService.saveUserName(name);
     } else {
-      await StorageService.saveUserName(null);
+      StorageService.saveUserName(null);
     }
     _navigateToDegree();
   }
 
-  void _onSkip() async {
-    await StorageService.saveUserName(null);
+  void _onSkip() {
+    StorageService.saveUserName(null);
     _navigateToDegree();
   }
 

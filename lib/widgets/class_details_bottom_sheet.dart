@@ -173,8 +173,6 @@ class _ClassDetailsBottomSheetState extends State<ClassDetailsBottomSheet> {
               IconButton(
                 icon: const Icon(Icons.close, color: AppConstants.textSecondary),
                 onPressed: () => Navigator.of(context).pop(),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
               ),
             ],
           ),

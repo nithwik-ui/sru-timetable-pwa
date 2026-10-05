@@ -192,24 +192,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 top: BorderSide(color: AppConstants.outline, width: 1.0),
               ),
             ),
-            child: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-                if (index < tabNames.length) {
-                  AnalyticsService.instance.logScreenView(tabNames[index]);
-                }
-              },
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: AppConstants.surface,
-              selectedItemColor: AppConstants.primary,
-              unselectedItemColor: AppConstants.textSecondary,
-              selectedLabelStyle: AppConstants.getLabelSmall(color: AppConstants.primary).copyWith(fontWeight: FontWeight.bold),
-              unselectedLabelStyle: AppConstants.getLabelSmall(color: AppConstants.textSecondary),
-              elevation: 0,
-              items: bottomNavItems,
+            child: Row(
+              children: List.generate(bottomNavItems.length, (index) {
+                final item = bottomNavItems[index];
+                final isSelected = _currentIndex == index;
+                return Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (_currentIndex != index) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                        if (index < tabNames.length) {
+                          AnalyticsService.instance.logScreenView(tabNames[index]);
+                        }
+                      }
+                    },
+                    child: Container(
+                      height: 60, // Ensure generous hit target
+                      color: Colors.transparent, // Crucial for Flutter Web HitTestBehavior.opaque
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          isSelected ? item.activeIcon : item.icon,
+                          const SizedBox(height: 4),
+                          Text(
+                            item.label ?? '',
+                            style: AppConstants.getLabelSmall(
+                              color: isSelected ? AppConstants.primary : AppConstants.textSecondary,
+                            ).copyWith(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ),
           ),
         ),

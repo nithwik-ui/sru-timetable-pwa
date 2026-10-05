@@ -55,18 +55,6 @@
         window.location.replace('https://play.google.com/store/apps/details?id=com.srutimetable.mobile');
       }
     })();
-    window.addEventListener('error', function(e) {
-      var d = document.createElement('div');
-      d.style.cssText = 'color:red;font-size:16px;padding:20px;background:white;position:absolute;z-index:9999;top:0;left:0;width:100%;word-wrap:break-word;';
-      d.innerHTML = '<b>JS Error:</b> ' + e.message + '<br><small>' + e.filename + ':' + e.lineno + '</small>';
-      document.body.appendChild(d);
-    });
-    window.addEventListener('unhandledrejection', function(e) {
-      var d = document.createElement('div');
-      d.style.cssText = 'color:red;font-size:16px;padding:20px;background:white;position:absolute;z-index:9999;top:0;left:0;width:100%;word-wrap:break-word;';
-      d.innerHTML = '<b>Promise Error:</b> ' + (e.reason && e.reason.message ? e.reason.message : e.reason);
-      document.body.appendChild(d);
-    });
   </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.

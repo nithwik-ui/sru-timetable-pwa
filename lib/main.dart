@@ -298,18 +298,20 @@ class _SplashControllerState extends State<SplashController> {
 
   Future<void> _initApp() async {
     try {
+      // StorageService is critical for routing
       await StorageService.init();
-      // Restore SRAAP session from secure storage
-      await SraapSessionManager.instance.restoreSession();
       
-      // Safely schedule reminders based on stored state on app startup
-      await NotificationService.reconcileReminders();
-      
-      // Trigger background sync on startup
-      SyncService.instance.syncTimetable();
-      
-      // Update widget info
-      await WidgetUpdater.updateWidgetInfo();
+      // DEFERRED STARTUP (Non-blocking)
+      Future.microtask(() async {
+        try {
+          await SraapSessionManager.instance.restoreSession();
+          await NotificationService.reconcileReminders();
+          SyncService.instance.syncTimetable();
+          await WidgetUpdater.updateWidgetInfo();
+        } catch (e) {
+          debugPrint('Deferred startup task failed: $e');
+        }
+      });
     } catch (e) {
       debugPrint('Local storage initialization failed: $e');
     }
@@ -320,21 +322,13 @@ class _SplashControllerState extends State<SplashController> {
     final hasStudent = StorageService.hasSelection();
     final hasFaculty = StorageService.hasFacultySelection();
     
-    bool launchedFromNotification = false;
-    try {
-      final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-      if (initialMessage != null) {
-        launchedFromNotification = true;
-      }
-    } catch (_) {}
-
     if (!mounted) return;
     
     Widget nextScreen;
     if (userMode == 'student' && hasStudent) {
-      nextScreen = DashboardScreen(initialTab: launchedFromNotification ? 0 : 0); // Always default to 0
+      nextScreen = const DashboardScreen(initialTab: 0);
     } else if (userMode == 'faculty' && hasFaculty) {
-      nextScreen = DashboardScreen(initialTab: launchedFromNotification ? 0 : 0);
+      nextScreen = const DashboardScreen(initialTab: 0);
     } else {
       nextScreen = const ModeSelectionScreen();
     }

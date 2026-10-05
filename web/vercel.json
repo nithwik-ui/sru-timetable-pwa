@@ -14,6 +14,10 @@
     {
       "source": "/sraap-proxy/:match*",
       "destination": "https://sraap.in/:match*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
